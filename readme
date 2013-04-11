@@ -1,0 +1,10 @@
+kernel mode calculator.
+using: 
+make
+sudo chmod calc.ko  sudo rmmod calc.ko
+dmesg
+sl /proc
+cat /proc/calc_first
+echo 1 > /proc/calc_first
+echo * > /proc/calc_operator
+cat /proc/calc_result
