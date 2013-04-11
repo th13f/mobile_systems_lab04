@@ -36,6 +36,15 @@ static char** devices_buffer;
 /* User message. */
 static char message[32];
 
+/* Device operations struct. */
+static struct file_operations fops = {
+        .owner = THIS_MODULE,
+        .read = device_read,
+        .write = device_write,
+        .open = device_open,
+        .release = device_release
+};
+
 /* Devices numbers. */
 static dev_t numbers[4];
 
@@ -222,6 +231,20 @@ static int __init calc_init(void)
 /* Module exit function */
 static void __exit calc_exit(void)
 {
+        int i;
+
+        for (i = 0; i < 4; i++) {
+                cdev_del(&c_dev[i]);
+                device_destroy(classes[i], numbers[i]);
+                class_destroy(classes[i]);
+                unregister_chrdev_region(numbers[i], 1);
+                kfree(devices_buffer[i]);
+        }
+
+        kfree(devices_buffer);
+
+        printk(KERN_INFO "Calc driver devices were removed.\n");
+        printk(KERN_INFO "Calc driver was unloaded.\n");
 }
 
 MODULE_AUTHOR("Roma & Vanya");
